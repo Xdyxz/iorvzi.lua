@@ -1,3 +1,173 @@
+local correctKey = "imgurt"
+
+local function showKeyUI()
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "KeySystemUI"
+    gui.ResetOnSpawn = false
+    gui.IgnoreGuiInset = true
+    gui.Parent = game:GetService("CoreGui")
+
+    local blur = Instance.new("BlurEffect", game:GetService("Lighting"))
+    blur.Size = 10
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 420, 0, 230)
+    frame.Position = UDim2.new(0.5, -210, 0.5, -115)
+    frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    frame.BorderSizePixel = 0
+    frame.Parent = gui
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+
+    -- Make frame draggable
+    local UIS = game:GetService("UserInputService")
+    local dragging = false
+    local dragInput, dragStart, startPos
+
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+
+    game:GetService("RunService").RenderStepped:Connect(function()
+        if dragging and dragInput then
+            local delta = dragInput.Position - dragStart
+            frame.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    local title = Instance.new("TextLabel")
+    title.Text = "Enter Key to Continue"
+    title.Size = UDim2.new(1, 0, 0, 60)
+    title.BackgroundTransparency = 1
+    title.TextColor3 = Color3.new(1, 1, 1)
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 26
+    title.Parent = frame
+
+    local input = Instance.new("TextBox")
+    input.PlaceholderText = "Enter key here"
+    input.Text = ""
+    input.Size = UDim2.new(0.85, 0, 0, 50)
+    input.Position = UDim2.new(0.075, 0, 0.4, 0)
+    input.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    input.TextColor3 = Color3.new(1, 1, 1)
+    input.ClearTextOnFocus = false
+    input.Font = Enum.Font.Gotham
+    input.TextSize = 20
+    input.Parent = frame
+    Instance.new("UICorner", input).CornerRadius = UDim.new(0, 6)
+
+    local submit = Instance.new("TextButton")
+    submit.Text = "Submit"
+    submit.Size = UDim2.new(0.4, 0, 0, 45)
+    submit.Position = UDim2.new(0.075, 0, 0.72, 0)
+    submit.BackgroundColor3 = Color3.fromRGB(60, 130, 255)
+    submit.TextColor3 = Color3.new(1, 1, 1)
+    submit.Font = Enum.Font.GothamBold
+    submit.TextSize = 20
+    submit.Parent = frame
+    Instance.new("UICorner", submit)
+
+    local copy = Instance.new("TextButton")
+    copy.Text = "Join Discord"
+    copy.Size = UDim2.new(0.4, 0, 0, 45)
+    copy.Position = UDim2.new(0.525, 0, 0.72, 0)
+    copy.BackgroundColor3 = Color3.fromRGB(30, 200, 120)
+    copy.TextColor3 = Color3.new(1, 1, 1)
+    copy.Font = Enum.Font.GothamBold
+    copy.TextSize = 20
+    copy.Parent = frame
+    Instance.new("UICorner", copy)
+
+    -- X Close Button
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Text = "X"
+    closeBtn.Size = UDim2.new(0, 30, 0, 30)
+    closeBtn.Position = UDim2.new(1, -35, 0, 5)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+    closeBtn.TextColor3 = Color3.new(1, 1, 1)
+    closeBtn.Font = Enum.Font.GothamBold
+    closeBtn.TextSize = 18
+    closeBtn.Parent = frame
+    Instance.new("UICorner", closeBtn)
+
+    -- Discord copy functionality
+    copy.MouseButton1Click:Connect(function()
+        setclipboard("https://discord.gg/5kQTaN4S")
+
+        local note = Instance.new("TextLabel")
+        note.Text = "✅ Discord link copied to clipboard"
+        note.Size = UDim2.new(0, 300, 0, 40)
+        note.Position = UDim2.new(1, -310, 1, -60)
+        note.AnchorPoint = Vector2.new(0, 1)
+        note.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        note.TextColor3 = Color3.new(1, 1, 1)
+        note.Font = Enum.Font.GothamBold
+        note.TextSize = 16
+        note.BackgroundTransparency = 0
+        note.Parent = gui
+        Instance.new("UICorner", note)
+
+        task.delay(2.5, function()
+            for i = 1, 10 do
+                note.TextTransparency += 0.1
+                note.BackgroundTransparency += 0.1
+                wait(0.05)
+            end
+            note:Destroy()
+        end)
+    end)
+
+    local result = false
+    local closed = false
+
+    submit.MouseButton1Click:Connect(function()
+        if input.Text == correctKey then
+            result = true
+            gui:Destroy()
+            blur:Destroy()
+        else
+            title.Text = "Wrong Key. Try again."
+            title.TextColor3 = Color3.fromRGB(255, 80, 80)
+        end
+    end)
+
+    closeBtn.MouseButton1Click:Connect(function()
+        closed = true
+        gui:Destroy()
+        blur:Destroy()
+    end)
+
+    repeat wait() until result or closed
+    return result
+end
+
+-- Run key system first
+local proceed = showKeyUI()
+if not proceed then return end
+
+-- Key System End
+
 --[[
 	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
 ]]
