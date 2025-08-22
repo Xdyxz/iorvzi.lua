@@ -1,8 +1,8 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
-   Name = " | IorvziHub",
-   LoadingTitle = " | IorvziHub",
-   LoadingSubtitle = "TikTok/Insta: iorvzi",
+   Name = " | Kanlaman Hub",
+   LoadingTitle = " | Kanlaman Hub",
+   LoadingSubtitle = "Welcome!",
    ConfigurationSaving = {
       Enabled = false,
       FolderName = "Folder",
